@@ -1,18 +1,30 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useAuth } from "@/components/auth-provider"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState } from "react";
+import { useAuth } from "@/components/auth-provider";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Home,
   Building2,
@@ -35,8 +47,8 @@ import {
   CheckCircle,
   Clock,
   X,
-} from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const mockOwnerProperties = [
   {
@@ -61,13 +73,13 @@ const mockOwnerProperties = [
     occupancy: "Family",
     bhk: "2BHK",
   },
-]
+];
 
 export default function OwnerDashboard() {
-  const { user, logout } = useAuth()
-  const { toast } = useToast()
-  const [activeTab, setActiveTab] = useState("properties")
-  const [showAddProperty, setShowAddProperty] = useState(false)
+  const { user, logout } = useAuth();
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("properties");
+  const [showAddProperty, setShowAddProperty] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -88,7 +100,7 @@ export default function OwnerDashboard() {
     contactName: user?.name || "",
     contactPhone: user?.phone || "",
     contactEmail: user?.email || "",
-  })
+  });
 
   const amenitiesList = [
     { id: "wifi", label: "WiFi", icon: Wifi },
@@ -99,7 +111,7 @@ export default function OwnerDashboard() {
     { id: "security", label: "24/7 Security", icon: Shield },
     { id: "laundry", label: "Laundry", icon: Home },
     { id: "mess", label: "Mess Facility", icon: Utensils },
-  ]
+  ];
 
   const toggleAmenity = (amenityId: string) => {
     setFormData((prev) => ({
@@ -107,41 +119,58 @@ export default function OwnerDashboard() {
       amenities: prev.amenities.includes(amenityId)
         ? prev.amenities.filter((id) => id !== amenityId)
         : [...prev.amenities, amenityId],
-    }))
-  }
+    }));
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setFormData((prev) => ({
         ...prev,
         images: [...prev.images, ...Array.from(e.target.files!)],
-      }))
+      }));
     }
-  }
+  };
 
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFormData((prev) => ({
         ...prev,
         video: e.target.files![0],
-      }))
+      }));
     }
-  }
+  };
 
   const removeImage = (index: number) => {
     setFormData((prev) => ({
       ...prev,
       images: prev.images.filter((_, i) => i !== index),
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     toast({
       title: "Property submitted for approval",
-      description: "Your property will be reviewed by our admin team within 24 hours.",
-    })
-    setShowAddProperty(false)
+      description:
+        "Your property will be reviewed by our admin team within 24 hours.",
+    });
+    setShowAddProperty(false);
+
+    const data = {
+      id: Math.random(),
+      type: "PG",
+      title: formData.title,
+      location: `${formData.address}, ${formData.city} ${formData.pincode}`,
+      rent: formData.rent,
+      occupancy: formData.occupancyType,
+      food: formData.foodType,
+      amenities: formData.amenities,
+      image: formData.images,
+      bhk: formData.bhk,
+      distance: "500m from KIT College",
+    };
+    const mockProperties = JSON.parse(localStorage.getItem("items") || "[]");
+    localStorage.setItem("items", JSON.stringify([mockProperties, data]));
     // Reset form
     setFormData({
       propertyType: "PG",
@@ -161,8 +190,8 @@ export default function OwnerDashboard() {
       contactName: user?.name || "",
       contactPhone: user?.phone || "",
       contactEmail: user?.email || "",
-    })
-  }
+    });
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -172,25 +201,25 @@ export default function OwnerDashboard() {
             <CheckCircle className="h-3 w-3 mr-1" />
             Approved
           </Badge>
-        )
+        );
       case "pending":
         return (
           <Badge className="bg-yellow-500/10 text-yellow-700 hover:bg-yellow-500/20">
             <Clock className="h-3 w-3 mr-1" />
             Pending
           </Badge>
-        )
+        );
       case "rejected":
         return (
           <Badge variant="destructive">
             <X className="h-3 w-3 mr-1" />
             Rejected
           </Badge>
-        )
+        );
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-secondary/20 to-background">
@@ -221,7 +250,11 @@ export default function OwnerDashboard() {
 
       <div className="container mx-auto px-4 py-8">
         {!showAddProperty ? (
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="space-y-6"
+          >
             <div className="flex items-center justify-between">
               <TabsList>
                 <TabsTrigger value="properties">My Properties</TabsTrigger>
@@ -266,10 +299,14 @@ export default function OwnerDashboard() {
                           <div className="flex items-start gap-3">
                             <Badge variant="outline">{property.type}</Badge>
                             {getStatusBadge(property.status)}
-                            {property.bhk && <Badge variant="secondary">{property.bhk}</Badge>}
+                            {property.bhk && (
+                              <Badge variant="secondary">{property.bhk}</Badge>
+                            )}
                           </div>
                           <div>
-                            <h3 className="text-lg font-semibold">{property.title}</h3>
+                            <h3 className="text-lg font-semibold">
+                              {property.title}
+                            </h3>
                             <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
                               <MapPin className="h-4 w-4" />
                               {property.location}
@@ -312,10 +349,14 @@ export default function OwnerDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>Recent Applications</CardTitle>
-                  <CardDescription>Manage tenant applications for your properties</CardDescription>
+                  <CardDescription>
+                    Manage tenant applications for your properties
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-center text-muted-foreground py-8">No applications yet</p>
+                  <p className="text-center text-muted-foreground py-8">
+                    No applications yet
+                  </p>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -325,9 +366,14 @@ export default function OwnerDashboard() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-semibold">Add New Property</h2>
-                <p className="text-sm text-muted-foreground mt-1">Fill in the details to list your property</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Fill in the details to list your property
+                </p>
               </div>
-              <Button variant="outline" onClick={() => setShowAddProperty(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowAddProperty(false)}
+              >
                 Cancel
               </Button>
             </div>
@@ -344,7 +390,9 @@ export default function OwnerDashboard() {
                       <Label htmlFor="propertyType">Property Type *</Label>
                       <Select
                         value={formData.propertyType}
-                        onValueChange={(value) => setFormData({ ...formData, propertyType: value })}
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, propertyType: value })
+                        }
                       >
                         <SelectTrigger id="propertyType">
                           <SelectValue />
@@ -364,7 +412,9 @@ export default function OwnerDashboard() {
                         id="title"
                         placeholder="e.g., Modern PG near KIT College"
                         value={formData.title}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, title: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -376,7 +426,12 @@ export default function OwnerDashboard() {
                       id="description"
                       placeholder="Describe your property, nearby facilities, rules, etc."
                       value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
                       rows={4}
                       required
                     />
@@ -396,7 +451,9 @@ export default function OwnerDashboard() {
                       id="address"
                       placeholder="House/Building number, Street name, Landmark"
                       value={formData.address}
-                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, address: e.target.value })
+                      }
                       rows={3}
                       required
                     />
@@ -408,7 +465,9 @@ export default function OwnerDashboard() {
                       <Input
                         id="city"
                         value={formData.city}
-                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, city: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -419,7 +478,9 @@ export default function OwnerDashboard() {
                         id="pincode"
                         placeholder="572201"
                         value={formData.pincode}
-                        onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, pincode: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -441,7 +502,9 @@ export default function OwnerDashboard() {
                         type="number"
                         placeholder="5000"
                         value={formData.rent}
-                        onChange={(e) => setFormData({ ...formData, rent: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, rent: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -451,7 +514,9 @@ export default function OwnerDashboard() {
                         <Label htmlFor="bhk">BHK Type *</Label>
                         <Select
                           value={formData.bhk}
-                          onValueChange={(value) => setFormData({ ...formData, bhk: value })}
+                          onValueChange={(value) =>
+                            setFormData({ ...formData, bhk: value })
+                          }
                         >
                           <SelectTrigger id="bhk">
                             <SelectValue placeholder="Select BHK" />
@@ -470,7 +535,9 @@ export default function OwnerDashboard() {
                       <Label htmlFor="occupancy">Occupancy Type *</Label>
                       <Select
                         value={formData.occupancyType}
-                        onValueChange={(value) => setFormData({ ...formData, occupancyType: value })}
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, occupancyType: value })
+                        }
                       >
                         <SelectTrigger id="occupancy">
                           <SelectValue />
@@ -491,7 +558,9 @@ export default function OwnerDashboard() {
                       <Label htmlFor="foodAvailable">Food Available *</Label>
                       <Select
                         value={formData.foodAvailable}
-                        onValueChange={(value) => setFormData({ ...formData, foodAvailable: value })}
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, foodAvailable: value })
+                        }
                       >
                         <SelectTrigger id="foodAvailable">
                           <SelectValue />
@@ -499,7 +568,9 @@ export default function OwnerDashboard() {
                         <SelectContent>
                           <SelectItem value="yes">Yes</SelectItem>
                           <SelectItem value="no">No</SelectItem>
-                          <SelectItem value="nearby">Nearby Mess Available</SelectItem>
+                          <SelectItem value="nearby">
+                            Nearby Mess Available
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -509,15 +580,21 @@ export default function OwnerDashboard() {
                         <Label htmlFor="foodType">Food Type *</Label>
                         <Select
                           value={formData.foodType}
-                          onValueChange={(value) => setFormData({ ...formData, foodType: value })}
+                          onValueChange={(value) =>
+                            setFormData({ ...formData, foodType: value })
+                          }
                         >
                           <SelectTrigger id="foodType">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="veg">Veg Only</SelectItem>
-                            <SelectItem value="non-veg">Non-Veg Available</SelectItem>
-                            <SelectItem value="both">Both Veg & Non-Veg</SelectItem>
+                            <SelectItem value="non-veg">
+                              Non-Veg Available
+                            </SelectItem>
+                            <SelectItem value="both">
+                              Both Veg & Non-Veg
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -529,7 +606,10 @@ export default function OwnerDashboard() {
                     <Label className="text-sm font-semibold">Amenities</Label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       {amenitiesList.map((amenity) => (
-                        <div key={amenity.id} className="flex items-center space-x-2">
+                        <div
+                          key={amenity.id}
+                          className="flex items-center space-x-2"
+                        >
                           <Checkbox
                             id={`amenity-${amenity.id}`}
                             checked={formData.amenities.includes(amenity.id)}
@@ -553,7 +633,9 @@ export default function OwnerDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>Photos & Videos</CardTitle>
-                  <CardDescription>Upload clear images and videos of your property</CardDescription>
+                  <CardDescription>
+                    Upload clear images and videos of your property
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
@@ -569,7 +651,9 @@ export default function OwnerDashboard() {
                       />
                       <Label htmlFor="images" className="cursor-pointer">
                         <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">Click to upload images</p>
+                        <p className="text-sm text-muted-foreground">
+                          Click to upload images
+                        </p>
                       </Label>
                     </div>
                     {formData.images.length > 0 && (
@@ -577,7 +661,9 @@ export default function OwnerDashboard() {
                         {formData.images.map((image, index) => (
                           <div key={index} className="relative group">
                             <img
-                              src={URL.createObjectURL(image) || "/placeholder.svg"}
+                              src={
+                                URL.createObjectURL(image) || "/placeholder.svg"
+                              }
                               alt={`Upload ${index + 1}`}
                               className="w-full h-20 object-cover rounded"
                             />
@@ -599,11 +685,19 @@ export default function OwnerDashboard() {
                   <div className="space-y-2">
                     <Label htmlFor="video">Property Video (Optional)</Label>
                     <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
-                      <Input id="video" type="file" accept="video/*" onChange={handleVideoUpload} className="hidden" />
+                      <Input
+                        id="video"
+                        type="file"
+                        accept="video/*"
+                        onChange={handleVideoUpload}
+                        className="hidden"
+                      />
                       <Label htmlFor="video" className="cursor-pointer">
                         <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                         <p className="text-sm text-muted-foreground">
-                          {formData.video ? formData.video.name : "Click to upload video"}
+                          {formData.video
+                            ? formData.video.name
+                            : "Click to upload video"}
                         </p>
                       </Label>
                     </div>
@@ -623,7 +717,12 @@ export default function OwnerDashboard() {
                       <Input
                         id="contactName"
                         value={formData.contactName}
-                        onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            contactName: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -634,7 +733,12 @@ export default function OwnerDashboard() {
                         id="contactPhone"
                         type="tel"
                         value={formData.contactPhone}
-                        onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            contactPhone: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -645,7 +749,12 @@ export default function OwnerDashboard() {
                         id="contactEmail"
                         type="email"
                         value={formData.contactEmail}
-                        onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            contactEmail: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -659,7 +768,12 @@ export default function OwnerDashboard() {
                   <Upload className="h-4 w-4 mr-2" />
                   Submit for Approval
                 </Button>
-                <Button type="button" variant="outline" size="lg" onClick={() => setShowAddProperty(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setShowAddProperty(false)}
+                >
                   Cancel
                 </Button>
               </div>
@@ -668,5 +782,5 @@ export default function OwnerDashboard() {
         )}
       </div>
     </div>
-  )
+  );
 }
